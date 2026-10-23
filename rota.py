@@ -1,4 +1,5 @@
 from functools import lru_cache
+from uzay_oyunu.dekoratorler import sure_olc
 import time 
 
 baglantilar = {
@@ -24,19 +25,18 @@ def rota_sayisi_onbelleksiz(gezegen,adim):
         return 1
     return sum(rota_sayisi_onbelleksiz(h,adim-1) for h in baglantilar[gezegen])
 
-basla = time.perf_counter()
-rota_sayisi_onbelleksiz("dünya", 20)
-sure_onbelleksiz = time.perf_counter() - basla
+olculen_rota = sure_olc(rota_sayisi_onbelleksiz)
+olculen_rota("dünya", adim=20)
 
 say = rota_sayaci(baglantilar)
 basla = time.perf_counter()
 say("dünya", 20)
 sure_onbellekli = time.perf_counter() - basla
 
-print(f"Önbelleksiz süre : {sure_onbelleksiz:.6f} saniye")
-print(f"Önbellekli süre  : {sure_onbellekli:.6f} saniye")
-print(f"Cache bilgisi    : {say.cache_info()}")
+#print(f"Önbelleksiz süre : {sure_onbelleksiz:.6f} saniye")
+#print(f"Önbellekli süre  : {sure_onbellekli:.6f} saniye")
+#print(f"Cache bilgisi    : {say.cache_info()}")
 
-print("3 adim  :", say("dünya", 3))
-print("10 adim :", say("dünya", 10))
-print("40 adim :", say("dünya", 40))
+#print("3 adim  :", say("dünya", 3))
+#print("10 adim :", say("dünya", 10))
+#print("40 adim :", say("dünya", 40))
