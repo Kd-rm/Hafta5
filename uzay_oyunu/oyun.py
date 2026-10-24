@@ -1,4 +1,5 @@
 import json
+from uzay_oyunu.dekoratorler import log_cagri
 
 try:
     from uzay_oyunu.araclar import hamle_sayaci
@@ -23,7 +24,7 @@ def envanter_metni(credits: bool, engines: bool, copilot: bool) -> str:
         return ""
     return "Sende: " + ", ".join(esyalar)
 
-
+@log_cagri
 def hedef_menusu(hedefler: list[str]) -> str:
     """Mevcut hedefleri numaralandirilmis bir menu metni olarak dondurur."""
     satirlar = ["Nereye gitmek istersin?"]
@@ -33,7 +34,7 @@ def hedef_menusu(hedefler: list[str]) -> str:
         sira = sira + 1
     return "\n".join(satirlar)
 
-
+@log_cagri
 def galaksi_kur(
     gezegenler: list[str], baglantilar: dict, baslangic: str, **kwargs
 ) -> dict:
