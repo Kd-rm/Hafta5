@@ -44,3 +44,37 @@ def log_cagri(func):
         return sonuc
 
     return wrapper
+
+def sinirla(alt: int | float, ust: int | float):
+    """Dekore edilen fonksiyonun ilk argümanının [alt, ust] aralığında
+    olup olmadığını denetleyen dekoratör.
+    Aralık dışındaysa anlamlı bir ValueError fırlatır.
+    """
+    def dekorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            
+            if args:
+                deger = args[0]
+            elif kwargs:
+                deger = next(iter(kwargs.values()))
+            else:
+                deger = None
+
+            # [alt, ust] aralık denetimi
+            if deger is not None and not (alt <= deger <= ust):
+                raise ValueError(
+                    f"{func.__name__}: {deger} değeri {alt}-{ust} aralığında değil"
+                )
+
+            return func(*args, **kwargs)
+
+        return wrapper
+
+    return dekorator
+
+
+@sinirla(0, 100)
+def yakit_harca(miktar: int | float, baslangic_yakiti: int = 100) -> int | float:
+    """Belirtilen miktar kadar yakıt harcar ve kalan yakıtı döner."""
+    return baslangic_yakiti - miktar

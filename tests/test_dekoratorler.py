@@ -1,5 +1,6 @@
 import pytest
 from uzay_oyunu.dekoratorler import sure_olc
+from uzay_oyunu.dekoratorler import sinirla, yakit_harca
 
 def test_sure_olc_sonuc_degismiyor():
     @sure_olc
@@ -27,3 +28,24 @@ def test_sure_olc_kimlik_korunuyor():
     assert ornek_fonksiyon.__name__ == "ornek_fonksiyon"
     
     assert ornek_fonksiyon.__doc__ == "Bu fonksiyon ornek bir aciklamaya sahiptir."
+
+def test_yakit_harca_gecerli_ve_sinir_degerler():
+    """Aralık içindeki normal ve tam sınır değerler (0 ve 100) başarıyla çalışmalıdır."""
+    assert yakit_harca(30) == 70
+    assert yakit_harca(0) == 100    # Alt sınır[cite: 3]
+    assert yakit_harca(100) == 0    # Üst sınır[cite: 3]
+
+
+def test_yakit_harca_alt_sinir_disi():
+    """0'dan küçük bir değer girildiğinde ValueError fırlatılmalıdır."""
+    with pytest.raises(ValueError) as excinfo:
+        yakit_harca(-1)
+    assert "yakit_harca" in str(excinfo.value)
+    assert "0-100 aralığında değil" in str(excinfo.value)
+
+
+def test_yakit_harca_ust_sinir_disi():
+    """100'den büyük bir değer girildiğinde ValueError fırlatılmalıdır."""
+    with pytest.raises(ValueError) as excinfo:
+        yakit_harca(150)
+    assert "yakit_harca: 150 değeri 0-100 aralığında değil" in str(excinfo.value)
