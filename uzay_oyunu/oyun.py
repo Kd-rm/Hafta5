@@ -1,5 +1,6 @@
 import json
 from uzay_oyunu.dekoratorler import log_cagri
+from komutlar import KOMUTLAR
 
 try:
     from uzay_oyunu.araclar import hamle_sayaci
@@ -59,8 +60,9 @@ def travel(
     engines: bool,
     copilot: bool,
     sayac=None,
-    gosterge = None,
+    gosterge=None,
     oyun_bitti: bool = False,
+    girdi_alici=input,
 ) -> None:
     """Oyuncunun envanterini ve secilen gezegenden gidilebilecek hedefleri ekrana basar."""
     # Her yolculukta sayaci cagiriyoruz
@@ -68,7 +70,7 @@ def travel(
     hamle = guncel_sayac()
 
     if gosterge is not None:
-        try :
+        try:
             next(gosterge)
         except StopIteration:
             print("Yakıtın bitti, uzayda sürükleniyorsun...")
@@ -81,7 +83,31 @@ def travel(
     # Hedefleri harita sozlügünden cekiyoruz
     hedefler = galaksi.get("baglantilar", {}).get(planet, [])
     if hedefler:
-        print(hedef_menusu(hedefler))
+        # Föyde istenen durum sözlüğünü hazırlıyoruz
+        durum = {
+            "konum": planet,
+            "baglantilar": galaksi.get("baglantilar", {}),
+            "credits": credits,
+            "engines": engines,
+            "copilot": copilot,
+        }
+
+        # Komut döngüsü: Girdi bir komut olduğu sürece çalıştırır ve aynı menüyü tekrar basar
+        while True:
+            print(hedef_menusu(hedefler))
+            try:
+                girdi = girdi_alici("> ").strip().lower()
+            except (EOFError, OSError):
+                # Pytest otomatik çalışırken testlerin kilitlenmemesi için
+                break
+
+            if girdi in KOMUTLAR:
+                komut_fonk, _ = KOMUTLAR[girdi]
+                print(komut_fonk(durum))
+                continue  # Komut çalıştıktan sonra aynı menüyü tekrar gösterir
+            else:
+                # Girdi komut değilse eskisi gibi gezegen seçimi kabul edilir ve döngü biter
+                break
 
     # Oyun bittiyse toplam hamle sayisini ekrana basar
     if oyun_bitti or planet == "kara_delik" or not hedefler:
